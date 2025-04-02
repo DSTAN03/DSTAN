@@ -1,0 +1,2 @@
+E:/Project/DSTAN/android/app/.cxx/Debug/132a2k1l/armeabi-v7a/CMakeFiles/edit_cache.dir
+E:/Project/DSTAN/android/app/.cxx/Debug/132a2k1l/armeabi-v7a/CMakeFiles/rebuild_cache.dir

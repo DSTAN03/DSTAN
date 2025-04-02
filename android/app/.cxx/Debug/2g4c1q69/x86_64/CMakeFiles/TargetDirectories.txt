@@ -1,0 +1,2 @@
+/Users/tuannguyen/Downloads/untitled folder/DSTAN/thuc_tap_1/android/app/.cxx/Debug/2g4c1q69/x86_64/CMakeFiles/edit_cache.dir
+/Users/tuannguyen/Downloads/untitled folder/DSTAN/thuc_tap_1/android/app/.cxx/Debug/2g4c1q69/x86_64/CMakeFiles/rebuild_cache.dir

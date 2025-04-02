@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392072935363",
+    "project_id": "task-thuctap",
+    "storage_bucket": "task-thuctap.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392072935363:android:27758afbfc2d325b076f76",
+        "android_client_info": {
+          "package_name": "com.thuctap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxHRaXLUysXA01-cPzFjM22H8x993V0Eo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
