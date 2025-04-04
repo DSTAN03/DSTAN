@@ -1,14 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:thuc_tap_1/components/snack_bar/td_snack_bar.dart';
+import 'package:thuc_tap_1/models/user_model.dart';
 import 'package:thuc_tap_1/pages/cart/cart_page_2.dart';
-import '../../components/button/app_elevated_button.dart';
-import '../../components/text_field/app_text_field.dart';
-import '../../components/text_field/app_text_field_password.dart';
+import '../../components/button/td_elevated_button.dart';
+import '../../components/snack_bar/top_snack_bar.dart';
+import '../../components/text_field/td_text_field.dart';
+import '../../components/text_field/td_text_field_password.dart';
+import '../../gen/assets.gen.dart';
+import '../../models/food_model2.dart';
 import '../../resources/app_color.dart';
-import '../../resources/app_style.dart';
+import '../../services/local/shared_prefs.dart';
+import '../../utils/validator.dart';
+import 'forgot_password.dart';
 import 'register_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, this.email});
+  final String? email;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -17,94 +27,132 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>(); // o~ validate
+  final _auth = FirebaseAuth.instance;
+  bool isLoading = false;
+  CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users'); // tham chieu
+
+  Future<void> _submitLogin(BuildContext context) async {
+    if (formKey.currentState?.validate() == false) {
+      // valiedate ko thanh cong thi return luon
+      return;
+    }
+    setState(() => isLoading = true); // de nut xoay tron de minh k bam duoc
+    _auth // dang dung thu vien , code de login
+        .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text)
+        .then((value) {
+      if (!context.mounted) return;
+      _getUser(context);
+    }).catchError((onError) {
+      // login ko thanh cong
+      setState(
+          () => isLoading = false); // lam cho nu ngung` xoay de co the bam lai
+      if (!context.mounted) return;
+      showTopSnackBar(
+        context,
+        const TDSnackBar.error(message: 'Email or Password is wrong😐'),
+      );
+    });
+  }
+
+  void _getUser(BuildContext context) {
+    userCollection
+        .doc(emailController
+            .text) // truy cap den document co id la email vua nhap
+        .get() // lay du lieu ra
+        .then((snapshot) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          SharedPrefs.user = FoodModel2.fromJson(data) as UserModel?;
+          if (!context.mounted)
+            return; // dang sử dụng lập trình bất đồng bộ nên context có thể biết mất bất cứ lúc nào
+          // kiểm tra xem context còn tồn tại hay không
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => const CartPage2(),
+            ),
+            (route) => false,
+          );
+        })
+        .catchError((onError) {})
+        .whenComplete(() => setState(() => isLoading = false));
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Welcome Back',
-                  style: AppStyle.h24Normal.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+        body: Form(
+          key: formKey,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0).copyWith(
+                top: MediaQuery.of(context).padding.top + 38.0, bottom: 16.0),
+            children: [
+              const Center(
+                child: Text(
+                  'Sign in',
+                  style: TextStyle(color: AppColor.red, fontSize: 26.0),
+                ),
+              ),
+              const SizedBox(height: 32.0),
+              Center(
+                child: Image.asset(Assets.images.logo3.path,
+                    width: 90.0, fit: BoxFit.cover),
+              ),
+              const SizedBox(height: 36.0),
+              TdTextField(
+                controller: emailController,
+                hintText: 'Email',
+                prefixIcon: const Icon(Icons.email, color: Colors.orange),
+                validator: Validator.email,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 20.0),
+              TdTextFieldPassword(
+                controller: passwordController,
+                hintText: 'Password',
+                validator: Validator.password,
+                onFieldSubmitted: (_) => _submitLogin(context),
+                textInputAction: TextInputAction.done,
+              ),
+              const SizedBox(height: 8.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const RegisterPage(),
+                    )),
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(color: AppColor.red, fontSize: 16.0),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Login to your account',
-                  style: AppStyle.h18Normal.copyWith(color: AppColor.grey),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 50.0),
-                AppTextField(
-                  controller: emailController,
-                  hintText: 'Email or Phone',
-                  textInputAction: TextInputAction.next,
-                  prefixIcon: Icons.email,
-                ),
-                const SizedBox(height: 20.0),
-                AppTextFieldPassword(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  textInputAction: TextInputAction.done,
-                  prefixIcon: Icons.lock,
-                ),
-                const SizedBox(height: 10.0),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
+                  const Text(
+                    ' | ',
+                    style: TextStyle(color: AppColor.orange, fontSize: 16.0),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ForgotPasswordPage(),
+                    )),
                     child: const Text(
                       'Forgot Password?',
-                      style: TextStyle(color: AppColor.red, fontSize: 14.0),
+                      style: TextStyle(color: AppColor.brown, fontSize: 16.0),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40.0),
-                AppElevatedButton(
-                  onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const CartPage2()),
-                    (Route<dynamic> route) => false,
-                  ),
-                  text: 'Login',
-                  padding: const EdgeInsets.symmetric(vertical: 14.0),
-                ),
-                const SizedBox(height: 30.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: AppColor.grey, fontSize: 14.0),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
-                        ),
-                      ),
-                      child: const Text(
-                        'Sign up',
-                        style: TextStyle(
-                            color: AppColor.red,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 60.0),
+              TdElevatedButton(
+                onPressed: () => _submitLogin(context),
+                text: 'Sign in',
+                isDisable: isLoading, // khi bằng true thì sẽ ko bấm được
+              ),
+            ],
           ),
         ),
       ),

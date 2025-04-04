@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'package:thuc_tap_1/utils/util.dart';
 
-class FoodModel {
+class FoodModel2 {
   String? id;
   String? imageStr;
   String? name;
@@ -12,11 +12,11 @@ class FoodModel {
 
   double get total => (price ?? 0.0) * (quantity ?? 0);
 
-  FoodModel() {
+  FoodModel2() {
     id = Util.getID();
   }
 
-  factory FoodModel.fromJson(Map<String, dynamic> json) => FoodModel()
+  factory FoodModel2.fromJson(Map<String, dynamic> json) => FoodModel2()
     ..id = json['id'] as String?
     ..imageStr = json['imageStr'] as String?
     ..name = json['name'] as String?

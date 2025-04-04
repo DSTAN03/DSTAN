@@ -48,6 +48,8 @@ class $AssetsImagesGen {
   /// File path: assets/images/logo_2.png
   AssetGenImage get logo2 => const AssetGenImage('assets/images/logo_2.png');
 
+  AssetGenImage get logo3 => const AssetGenImage('assets/images/logo_3.png');
+
   /// File path: assets/images/radio_button_off.png
   AssetGenImage get radioButtonOff =>
       const AssetGenImage('assets/images/radio_button_off.png');
