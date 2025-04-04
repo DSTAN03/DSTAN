@@ -28,10 +28,17 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CollectionReference _userCollection =
-      FirebaseFirestore.instance.collection('users');
+  final _userCollection = FirebaseFirestore.instance.collection('users');
 
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.email != null) {
+      emailController.text = widget.email!;
+    }
+  }
 
   Future<void> _submitLogin(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
