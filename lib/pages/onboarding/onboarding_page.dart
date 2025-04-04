@@ -122,8 +122,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             text: 'Back',
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 30.0),
-                            textColor: AppColor.orange.withOpacity(0.6),
-                            borderColor: AppColor.orange.withOpacity(0.6),
+                            textColor: AppColor.orange.withValues(alpha: 0.6),
+                            borderColor: AppColor.orange.withValues(alpha: 0.6),
                             // highlightColor: Colors.transparent,
                             // splashColor: Colors.transparent,
                           ),

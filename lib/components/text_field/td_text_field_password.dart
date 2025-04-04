@@ -80,7 +80,7 @@ class _TdTextFieldPasswordState extends State<TdTextFieldPassword> {
               onTap: () => setState(() => showPassword = !showPassword),
               child: showPassword
                   ? Icon(Icons.remove_red_eye_rounded,
-                      color: AppColor.brown.withOpacity(0.68))
+                      color: AppColor.brown.withValues(alpha: 0.68))
                   : const Icon(Icons.remove_red_eye_outlined,
                       color: AppColor.green),
             ),

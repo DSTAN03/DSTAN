@@ -119,7 +119,7 @@ class FoodItem2 extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(2.0).copyWith(right: 8.0),
                         child: CircleAvatar(
-                          backgroundColor: Colors.grey.withOpacity(0.8),
+                          backgroundColor: Colors.grey.withValues(alpha: 0.8),
                           radius: 12.6,
                           child: const Icon(
                             Icons.delete,

@@ -1,13 +1,15 @@
-import 'dart:developer' as dev;
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:thuc_tap_1/components/snack_bar/td_snack_bar.dart';
+
 import '../../components/button/td_elevated_button.dart';
-import '../../components/snack_bar/td_snack_bar.dart';
 import '../../components/snack_bar/top_snack_bar.dart';
 import '../../components/text_field/td_text_field.dart';
 import '../../components/text_field/td_text_field_password.dart';
@@ -26,224 +28,110 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
-  PostImage postImage = PostImage(); // day anh len thong qua api
-  final formKey = GlobalKey<FormState>();
-  File? fileAvatar; // chon anh tren dth, chưa chọn ảnh là null 
-  bool isLoading = false;
-  final _auth = FirebaseAuth.instance; // dùng thư viện 
+  final _formKey = GlobalKey<FormState>();
+  final _auth = FirebaseAuth.instance;
+  final _userCollection = FirebaseFirestore.instance.collection('users');
+  final _postImage = PostImage();
 
-  // tao tham chieu den collection task luu tru trong firebase
-  // de add, update, delete
-  CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users'); // tham chieu
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
-  Future<void> pickAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
+  File? _avatarFile;
+  bool _isLoading = false;
+
+  Future<void> _pickAvatar() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result == null) return;
-    fileAvatar = File(result.files.single.path!); // sau khi chọn ảnh rồi thì ko còn là null nữa 
-    setState(() {});
+
+    setState(() {
+      _avatarFile = File(result.files.single.path!);
+    });
   }
 
-  Future<void> _onSubmit(BuildContext context) async {
-    if (formKey.currentState!.validate() == false) {
-      return;
-    }
+  Future<void> _submitForm(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
 
-    _auth // code de dang ky, thanh cong thi vao then that bai thi vao cathh
-        .createUserWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text)
-        .then((value) async { // tự động lưu 1 accout, và mình cần lưu 1 user vào, và cần lưu 1 document vào users 
-      UserModel user = UserModel() // tạo 1 obj 
-        ..name = nameController.text.trim()
-        ..email = emailController.text.trim()
-        ..avatar = fileAvatar != null
-            ? await postImage.post(image: fileAvatar!)
-            : null;
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-      _addUser(user);
+      final avatarUrl = _avatarFile != null
+          ? await _postImage.post(image: _avatarFile!)
+          : null;
+
+      final user = UserModel()
+        ..name = _nameController.text.trim()
+        ..email = _emailController.text.trim()
+        ..avatar = avatarUrl;
+
+      await _userCollection.doc(user.email).set(user.toJson());
 
       if (!context.mounted) return;
 
       showTopSnackBar(
         context,
         const TDSnackBar.success(
-            message: 'Register successfully, please login 😍'),
+          message: 'Register successfully, please login 😍',
+        ),
       );
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => LoginPage(email: emailController.text.trim()),
+          builder: (_) => LoginPage(email: user.email),
         ),
-        (Route<dynamic> route) => false,
+        (route) => false,
       );
-    }).catchError((onError) { // khi thất bại thì hiển thị snackbar
-      FirebaseAuthException a = onError as FirebaseAuthException;
+    } on FirebaseAuthException catch (e) {
       if (!context.mounted) return;
-      showTopSnackBar(
-        context,
-        TDSnackBar.error(message: a.message ?? ''),
-      );
-    }).whenComplete(() {
-      setState(() => isLoading = false);
-    });
-  }
-
-  void _addUser(UserModel user) { // add document vao
-    userCollection
-        .doc(user.email) // lay email lam id
-        .set(user.toJson()) // data 
-        .then((_) {})
-        .catchError((error) {
-      dev.log("Failed to add User: $error");
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: Form(
-          key: formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0).copyWith(
-                top: MediaQuery.of(context).padding.top + 38.0, bottom: 16.0),
-            children: [
-              const Center(
-                child: Text(
-                  'Register',
-                  style: TextStyle(color: AppColor.red, fontSize: 26.0),
-                ),
-              ),
-              const SizedBox(height: 30.0),
-              Center(
-                child: _buildAvatar(),
-              ),
-              const SizedBox(height: 40.0),
-              TdTextField(
-                controller: nameController,
-                hintText: 'Full Name',
-                prefixIcon: const Icon(Icons.person, color: AppColor.orange),
-                textInputAction: TextInputAction.next,
-                validator: Validator.required,
-              ),
-              const SizedBox(height: 20.0),
-              TdTextField(
-                controller: emailController,
-                hintText: 'Email',
-                prefixIcon: const Icon(Icons.email, color: AppColor.orange),
-                textInputAction: TextInputAction.next,
-                validator: Validator.email,
-              ),
-              const SizedBox(height: 20.0),
-              TdTextFieldPassword(
-                controller: passwordController,
-                hintText: 'Password',
-                textInputAction: TextInputAction.next,
-                validator: Validator.password,
-              ),
-              const SizedBox(height: 20.0),
-              TdTextFieldPassword(
-                controller: confirmPasswordController,
-                onChanged: (_) => setState(() {}),
-                hintText: 'Confirm Password',
-                onFieldSubmitted: (_) => _onSubmit(context),
-                textInputAction: TextInputAction.done,
-                validator: Validator.confirmPassword(
-                  passwordController.text,
-                ),
-              ),
-              const SizedBox(height: 56.0),
-              TdElevatedButton(
-                onPressed: () => _onSubmit(context),
-                text: 'Sign up',
-                isDisable: isLoading,
-              ),
-              const SizedBox(height: 12.0),
-              RichText(
-                text: TextSpan(
-                  text: 'Do you have an account? ',
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.grey,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: 'Sign in',
-                      style: TextStyle(color: AppColor.red),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap =
-                            () => Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginPage(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                ),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+      showTopSnackBar(context, TDSnackBar.error(message: e.message ?? ''));
+    } catch (e) {
+      dev.log("Registration error: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Widget _buildAvatar() {
+    final avatarImage = _avatarFile != null
+        ? FileImage(_avatarFile!)
+        : AssetImage(Assets.images.defaultAvatar.path) as ImageProvider;
+
     return GestureDetector(
-      onTap: isLoading == true ? null : pickAvatar, // khi avatar dang xoay thi k doi anh dc 
+      onTap: _isLoading ? null : _pickAvatar,
       child: Stack(
         children: [
-          isLoading == true
-              ? CircleAvatar( // vong tron` xoay
+          _isLoading
+              ? CircleAvatar(
                   radius: 34.6,
                   backgroundColor: Colors.orange.shade200,
                   child: const SizedBox.square(
-                    dimension: 36.0,
+                    dimension: 36,
                     child: CircularProgressIndicator(
                       color: AppColor.pink,
                       strokeWidth: 2.6,
                     ),
                   ),
                 )
-              : Container(
-                  // margin: const EdgeInsets.all(3.6),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColor.orange),
-                  ),
-                  child: CircleAvatar(
-                    radius: 34.6,
-                    backgroundImage: fileAvatar == null
-                        // ? Assets.images.defaultAvatar.provider()
-                        // ? AssetImage(Assets.images.defaultAvatar.path)
-                        //     as ImageProvider
-                        ? Image.asset(Assets.images.defaultAvatar.path).image // chua chon anh thi hien anh default
-                        : FileImage(
-                            File(fileAvatar?.path ?? ''),
-                          ),
-                  ),
+              : CircleAvatar(
+                  radius: 34.6,
+                  backgroundImage: avatarImage,
+                  backgroundColor: Colors.transparent,
                 ),
           Positioned(
-            right: 0.0,
-            bottom: 0.0,
+            right: 0,
+            bottom: 0,
             child: Container(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.pink),
+                color: Colors.white,
+                border: Border.all(color: AppColor.pink),
               ),
               child: const Icon(
                 Icons.camera_alt_outlined,
@@ -253,6 +141,96 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = EdgeInsets.symmetric(horizontal: 20)
+        .copyWith(top: MediaQuery.of(context).padding.top + 38, bottom: 16);
+
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Form(
+          key: _formKey,
+          child: ListView(
+            padding: padding,
+            children: [
+              const Center(
+                child: Text(
+                  'Register',
+                  style: TextStyle(color: AppColor.red, fontSize: 26),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Center(child: _buildAvatar()),
+              const SizedBox(height: 40),
+              TdTextField(
+                controller: _nameController,
+                hintText: 'Full Name',
+                prefixIcon: const Icon(Icons.person, color: AppColor.orange),
+                textInputAction: TextInputAction.next,
+                validator: Validator.required,
+              ),
+              const SizedBox(height: 20),
+              TdTextField(
+                controller: _emailController,
+                hintText: 'Email',
+                prefixIcon: const Icon(Icons.email, color: AppColor.orange),
+                textInputAction: TextInputAction.next,
+                validator: Validator.email,
+              ),
+              const SizedBox(height: 20),
+              TdTextFieldPassword(
+                controller: _passwordController,
+                hintText: 'Password',
+                textInputAction: TextInputAction.next,
+                validator: Validator.password,
+              ),
+              const SizedBox(height: 20),
+              TdTextFieldPassword(
+                controller: _confirmPasswordController,
+                hintText: 'Confirm Password',
+                onFieldSubmitted: (_) => _submitForm(context),
+                onChanged: (_) => setState(() {}),
+                textInputAction: TextInputAction.done,
+                validator: Validator.confirmPassword(
+                  _passwordController.text,
+                ),
+              ),
+              const SizedBox(height: 56),
+              TdElevatedButton(
+                onPressed: () => _submitForm(context),
+                text: 'Sign up',
+                isDisable: _isLoading,
+              ),
+              const SizedBox(height: 12),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Do you have an account? ',
+                  style: const TextStyle(fontSize: 16, color: AppColor.grey),
+                  children: [
+                    TextSpan(
+                      text: 'Sign in',
+                      style: const TextStyle(color: AppColor.red),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (_) => const LoginPage()),
+                            (route) => false,
+                          );
+                        },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

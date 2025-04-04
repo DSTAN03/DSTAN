@@ -76,7 +76,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   const SizedBox(height: 2.0),
                   Text('Enter Your Email',
                       style: TextStyle(
-                          color: AppColor.brown.withOpacity(0.8),
+                          color: AppColor.brown.withValues(alpha: 0.8),
                           fontSize: 18.6)),
                   const SizedBox(height: 38.0),
                   Image.asset(

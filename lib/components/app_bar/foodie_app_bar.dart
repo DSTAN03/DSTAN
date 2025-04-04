@@ -16,7 +16,7 @@ class FoodieAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) : icon = icon ??
             Icon(
               Icons.arrow_back_ios_new,
-              color: Colors.brown.withOpacity(0.8),
+              color: Colors.brown.withValues(alpha: 0.8),
             );
 
   final Function()? iconPressed;

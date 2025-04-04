@@ -18,8 +18,8 @@ class TdElevatedButton extends StatelessWidget {
     Color? splashColor,
     Color? highlightColor,
   })  : borderRadius = borderRadius ?? BorderRadius.circular(10.0),
-        splashColor = splashColor ?? AppColor.yellow.withOpacity(0.8),
-        highlightColor = highlightColor ?? AppColor.green.withOpacity(0.8);
+        splashColor = splashColor ?? AppColor.yellow.withValues(alpha: 0.8),
+        highlightColor = highlightColor ?? AppColor.green.withValues(alpha: 0.8);
 
   TdElevatedButton.outline({
     super.key,
@@ -37,8 +37,8 @@ class TdElevatedButton extends StatelessWidget {
     Color? splashColor,
     Color? highlightColor,
   })  : borderRadius = borderRadius ?? BorderRadius.circular(10.0),
-        splashColor = splashColor ?? AppColor.yellow.withOpacity(0.6),
-        highlightColor = highlightColor ?? AppColor.green.withOpacity(0.6);
+        splashColor = splashColor ?? AppColor.yellow.withValues(alpha: 0.6),
+        highlightColor = highlightColor ?? AppColor.green.withValues(alpha: 0.6);
 
   TdElevatedButton.small({
     super.key,
@@ -56,8 +56,8 @@ class TdElevatedButton extends StatelessWidget {
     Color? splashColor,
     Color? highlightColor,
   })  : borderRadius = borderRadius ?? BorderRadius.circular(8.0),
-        splashColor = splashColor ?? AppColor.yellow.withOpacity(0.8),
-        highlightColor = highlightColor ?? AppColor.green.withOpacity(0.8);
+        splashColor = splashColor ?? AppColor.yellow.withValues(alpha: 0.8),
+        highlightColor = highlightColor ?? AppColor.green.withValues(alpha: 0.8);
 
   TdElevatedButton.smallOutline({
     super.key,
@@ -75,8 +75,8 @@ class TdElevatedButton extends StatelessWidget {
     Color? splashColor,
     Color? highlightColor,
   })  : borderRadius = borderRadius ?? BorderRadius.circular(8.0),
-        splashColor = splashColor ?? AppColor.yellow.withOpacity(0.6),
-        highlightColor = highlightColor ?? AppColor.green.withOpacity(0.6);
+        splashColor = splashColor ?? AppColor.yellow.withValues(alpha: 0.6),
+        highlightColor = highlightColor ?? AppColor.green.withValues(alpha: 0.6);
 
   final Function()? onPressed;
   final double height;
