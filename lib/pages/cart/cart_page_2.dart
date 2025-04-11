@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../components/app_bar/td_app_bar.dart';
 import '../../components/app_dialog.dart';
+import '../../consts.dart';
+import '../../services/local/shared_prefs.dart';
+import '../profile/profile_page.dart';
 import 'widget/delivery_time.dart';
 import 'widget/food_item_2.dart';
-import '../../components/app_bar/foodie_app_bar.dart';
 import '../../models/food_model.dart';
 
 class CartPage2 extends StatefulWidget {
-  const CartPage2({super.key});
+  const CartPage2({super.key, required this.title});
+  final String title;
 
   @override
   State<CartPage2> createState() => _CartPage2State();
 }
 
 class _CartPage2State extends State<CartPage2> {
+  final addController = TextEditingController();
+  final addFocus = FocusNode();
+  bool showAddBox = false;
+
   double get totalPrice {
     double total = 0.0;
     for (FoodModel food in foods) {
@@ -25,15 +33,20 @@ class _CartPage2State extends State<CartPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FoodieAppBar(
-        iconPressed: () => AppDialog.dialog(
+      appBar: TdAppBar(
+        leftPressed: () => AppDialog.dialog(
           context,
           title: const Text('😍'),
           content: 'Do you want to exit app?',
           action: () =>
               SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
         ),
-        title: 'Foodies',
+        rightPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        )),
+        title: widget.title,
+        avatar:
+            '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -69,7 +82,8 @@ class _CartPage2State extends State<CartPage2> {
                     const SizedBox(height: 20.0),
               ),
               const SizedBox(height: 56.0),
-              DeliveryTime(minute: 25, totalPrice: totalPrice),
+              DeliveryTime(minute: 25, totalPrice: totalPrice)
+              
             ],
           ),
         ),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:thuc_tap_1/components/app_bar/td_app_bar.dart';
 // import 'package:thuc_tap_1/pages/cart/cart_page_2.dart';
 // import 'package:thuc_tap_1/pages/payment/payment_last_page.dart';
 import 'package:thuc_tap_1/services/stripe_services.dart';
-import '../../components/app_bar/foodie_app_bar.dart';
 import '../../components/app_box_shadow.dart';
 import '../../components/button/app_elevated_button.dart';
+import '../../consts.dart';
 import '../../gen/assets.gen.dart';
 import '../../models/payment_method_model.dart';
+import '../../services/local/shared_prefs.dart';
+import '../profile/profile_page.dart';
 
 class PaymentMethodPage extends StatefulWidget {
   const PaymentMethodPage({super.key});
@@ -19,9 +22,14 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FoodieAppBar(
-        iconPressed: () => Navigator.of(context).pop(),
+      appBar: TdAppBar(
+        leftPressed: () => Navigator.of(context).pop(),
         title: 'Payment Method',
+        rightPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        )),
+        avatar:
+            '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
       body: Stack(
         children: [
@@ -55,9 +63,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
             right: 20.0,
             bottom: 60.0,
             child: AppElevatedButton(
-              onPressed: () => {
-                  StripeServices.instance.makePayment()
-                },
+              onPressed: () => {StripeServices.instance.makePayment()},
               text: 'Purchase',
             ),
           ),

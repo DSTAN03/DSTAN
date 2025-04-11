@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thuc_tap_1/components/app_bar/td_app_bar.dart';
 import '../../components/app_dialog.dart';
 import 'widget/delivery_time.dart';
 import 'widget/food_item.dart';
-import '../../components/app_bar/foodie_app_bar.dart';
 import '../../models/food_model.dart';
 
 class CartPage extends StatefulWidget {
@@ -31,14 +31,15 @@ class _CartPageState extends State<CartPage> {
         return false; // vo hieu hoa nut bam
       },
       child: Scaffold(
-        appBar: FoodieAppBar(
-          iconPressed: () => AppDialog.dialog(
+        appBar: TdAppBar(
+          leftPressed: () => AppDialog.dialog(
             context,
             title: const Text('😍'),
             content: 'Do you want to exit app?',
             action: () =>
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
           ),
+         
           title: 'Foodies',
         ),
         body: SingleChildScrollView(

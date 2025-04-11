@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => const CartPage2(),
+          builder: (context) => const CartPage2(title: 'FOODIES',),
         ),
         (Route<dynamic> route) => false,
       );

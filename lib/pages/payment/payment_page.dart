@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../components/app_bar/foodie_app_bar.dart';
+import 'package:thuc_tap_1/components/app_bar/td_app_bar.dart';
 import '../../components/app_box_shadow.dart';
+import '../../consts.dart';
+import '../../services/local/shared_prefs.dart';
+import '../profile/profile_page.dart';
 import 'address_page.dart';
 import 'payment_method_page.dart';
 
@@ -10,9 +13,14 @@ class PaymentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FoodieAppBar(
-        iconPressed: () => Navigator.of(context).pop(),
+      appBar: TdAppBar(
+        leftPressed: () => Navigator.of(context).pop(),
         title: 'Payment',
+        rightPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        )),
+        avatar:
+            '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0)

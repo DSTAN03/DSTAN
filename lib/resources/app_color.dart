@@ -4,7 +4,9 @@ class AppColor {
   AppColor._();
   static const Color red = Colors.red;
   static const Color green = Colors.green;
-  static const Color blue = Color(0xFF5F52EE);
+  static const Color blue = Colors.blue;
+  static const Color primary = Color(0xFFF19b15);
+  static const Color dark500 = Color(0xFF33495D);
   static const Color black = Colors.black;
   static const Color white = Colors.white;
   static const Color grey = Colors.grey;

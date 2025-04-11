@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:thuc_tap_1/components/app_bar/td_app_bar.dart';
 import 'package:thuc_tap_1/pages/payment/payment_page.dart';
-import '../../components/app_bar/foodie_app_bar.dart';
 import '../../components/button/app_elevated_button.dart';
+import '../../consts.dart';
 import '../../models/address_model.dart';
 // import '../cart/cart_page.dart';
+import '../../services/local/shared_prefs.dart';
+import '../profile/profile_page.dart';
 import 'widget/address_item.dart';
 
 class AddressPage extends StatefulWidget {
-  const AddressPage({super.key});
+  const AddressPage({
+    super.key,
+  });
 
   @override
   State<AddressPage> createState() => _AddressPageState();
@@ -17,9 +22,14 @@ class _AddressPageState extends State<AddressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FoodieAppBar(
-        iconPressed: () => Navigator.of(context).pop(),
+      appBar: TdAppBar(
+        leftPressed: () => Navigator.of(context).pop(),
         title: 'Choose Address',
+        rightPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        )),
+        avatar:
+            '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
       body: SingleChildScrollView(
         child: Padding(
