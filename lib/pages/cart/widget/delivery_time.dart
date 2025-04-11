@@ -75,7 +75,7 @@ class DeliveryTime extends StatelessWidget {
                       child: AppElevatedButton.smallOutline(
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const ChatAiPage(),
+                            builder: (context) => const ChatScreen(),
                           ),
                         ),
                         height: 40.0,
