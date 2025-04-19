@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!context.mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const CartPage2(title: 'FOODIES',)),
+        MaterialPageRoute(builder: (_) => CartPage2(title: 'FOODIES', )),
         (route) => false,
       );
     } catch (_) {

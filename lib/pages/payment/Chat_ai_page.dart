@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:thuc_tap_1/components/app_bar/td_app_bar.dart';
-
 import '../../consts.dart';
+import '../../services/gemini_service.dart';
 import '../../services/local/shared_prefs.dart';
 import '../profile/profile_page.dart';
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ChatScreen(),
-    );
-  }
-}
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -28,28 +15,35 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
+  bool _isTyping = false;
 
-  void _sendMessage() {
-    if (_controller.text.trim().isEmpty) return;
+  void _sendMessage() async {
+    final userInput = _controller.text.trim();
+    if (userInput.isEmpty) return;
 
     final now = DateTime.now();
 
     setState(() {
       _messages.add({
         "sender": "user",
-        "text": _controller.text.trim(),
+        "text": userInput,
         "timestamp": now,
       });
-
-      // Giả lập phản hồi AI sau vài giây (ở đây làm đơn giản)
-      _messages.add({
-        "sender": "ai",
-        "text": "Tôi là AI, bạn vừa nói: '${_controller.text.trim()}'",
-        "timestamp": now,
-      });
+      _isTyping = true;
     });
 
     _controller.clear();
+
+    final aiResponse = await GeminiService().sendMessage(userInput);
+
+    setState(() {
+      _messages.add({
+        "sender": "ai",
+        "text": aiResponse ?? "Xin lỗi, tôi chưa hiểu câu hỏi của bạn.",
+        "timestamp": DateTime.now(),
+      });
+      _isTyping = false;
+    });
   }
 
   @override
@@ -57,10 +51,10 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: TdAppBar(
         leftPressed: () => Navigator.of(context).pop(),
-        rightPressed: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const ProfilePage(),
-        )),
-        title: "Chat With AI ",
+        rightPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const ProfilePage()),
+        ),
+        title: "Chat With AI",
         avatar:
             '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
@@ -69,8 +63,21 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
-              itemCount: _messages.length,
+              itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
+                if (_isTyping && index == _messages.length) {
+                  return const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "AI đang trả lời...",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
                 final msg = _messages[index];
                 final isUser = msg['sender'] == 'user';
                 final time = (msg['timestamp'] as DateTime);
@@ -89,8 +96,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color:
-                              isUser ? Colors.blueAccent : Colors.grey.shade300,
+                          color: isUser
+                              ? Colors.blueAccent
+                              : Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -123,6 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       hintText: 'Nhập tin nhắn...',
                       border: InputBorder.none,
                     ),
+                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 IconButton(

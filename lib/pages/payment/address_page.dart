@@ -55,7 +55,7 @@ class _AddressPageState extends State<AddressPage> {
                   );
                 },
                 separatorBuilder: (context, index) =>
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 30.0),
                 itemCount: addresses.length,
               ),
               const SizedBox(height: 46.0),

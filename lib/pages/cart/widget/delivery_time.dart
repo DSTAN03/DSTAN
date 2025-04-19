@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:thuc_tap_1/pages/payment/Chat_ai_page.dart';
+import 'package:thuc_tap_1/pages/cart/widget/button_shimmner.dart';
 import '../../../components/app_box_shadow.dart';
 import '../../../components/button/app_elevated_button.dart';
 import '../../payment/payment_page.dart';
@@ -29,11 +28,12 @@ class DeliveryTime extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
-                'Delivery Time',
-                style: TextStyle(color: Colors.red, fontSize: 16.0),
+              Expanded(
+                child: const Text(
+                  'Delivery Time',
+                  style: TextStyle(color: Colors.red, fontSize: 16.0),
+                ),
               ),
-              const Spacer(),
               Image.asset('assets/images/time_icon.png', width: 20.0),
               Text(
                 ' ${minute ?? '-:-'} mins',
@@ -62,41 +62,25 @@ class DeliveryTime extends StatelessWidget {
                 totalPrice.toStringAsFixed(1),
                 style: const TextStyle(color: Colors.brown, fontSize: 24.0),
               ),
-              const SizedBox(
-                width: 15.0,
-              ),
+              const SizedBox(width: 15.0),
               Expanded(
                 child: Row(
                   children: [
-                    Shimmer.fromColors(
-                      baseColor: const Color.fromARGB(255, 240, 13, 13),
-                      highlightColor: Colors.yellow,
-                      
-                      child: AppElevatedButton.smallOutline(
+                    Expanded(child: ShimmerButtonDemo()),
+                    const SizedBox(width: 5.0),
+                    Expanded(
+                      child: AppElevatedButton.small(
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const ChatScreen(),
+                            builder: (context) => const PaymentPage(),
                           ),
                         ),
                         height: 40.0,
-                        text: "Chat with AI",
+                        text: 'Place Order',
                         borderRadius:
                             const BorderRadius.all(Radius.circular(20.0)),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       ),
-                    ),
-                    const SizedBox(width: 5.0),
-                    AppElevatedButton.small(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const PaymentPage(),
-                        ),
-                      ),
-                      height: 40.0,
-                      text: 'Place Order',
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20.0)),
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     ),
                   ],
                 ),

@@ -11,10 +11,11 @@ import '../../utils/validator.dart';
 import 'login_page.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({super.key});
+  const ChangePasswordPage({super.key, required this.email});
 
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+  final String? email;
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {

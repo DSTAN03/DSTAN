@@ -1,244 +1,206 @@
 import 'dart:io';
-import 'dart:developer' as dev;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:thuc_tap_1/pages/cart/cart_page_2.dart';
-import '../../components/button/td_elevated_button.dart';
-import '../../components/snack_bar/td_snack_bar.dart';
-import '../../components/snack_bar/top_snack_bar.dart';
-import '../../components/text_field/td_text_field.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:thuc_tap_1/pages/payment/address_page.dart';
+import 'package:thuc_tap_1/pages/payment/chat_ai_page.dart';
+import 'package:thuc_tap_1/pages/payment/payment_method_page.dart';
+import '../../components/app_dialog.dart';
 import '../../consts.dart';
 import '../../gen/assets.gen.dart';
 import '../../models/user_model.dart';
 import '../../resources/app_color.dart';
 import '../../services/local/shared_prefs.dart';
-import '../../utils/post_image.dart';
-import '../../utils/validator.dart';
+import '../auth/change_password_page.dart';
+import '../auth/login_page.dart';
+import 'my_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({
-    super.key,
-  });
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  PostImage postImage = PostImage();
-  final formKey = GlobalKey<FormState>();
-  File? fileAvatar;
-  bool isLoading = false;
   UserModel user = SharedPrefs.user ?? UserModel();
-
-  CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users'); // tham chieu
-
-  Future<void> pickAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-    if (result == null) return;
-    fileAvatar = File(result.files.single.path!);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    nameController.text = user.name ?? '';
-    emailController.text = user.email ?? '';
-    // setState(() {});
-  }
-
-  Future<void> _updateProfile(BuildContext context) async {
-    if (formKey.currentState!.validate() == false) {
-      return;
-    }
-
-    setState(() => isLoading = true);
-    await Future.delayed(const Duration(milliseconds: 1000));
-
-    final body = UserModel()
-      ..name = nameController.text.trim()
-      ..email = emailController.text.trim()
-      ..avatar =
-          fileAvatar != null // neu khac null 
-          ? await postImage.post(image: fileAvatar!) // nhan anh moi
-          : SharedPrefs.user?.avatar; // nhan anh cu 
-
-    userCollection.doc(user.email).update(body.toJson()).then((_) { // truy cap den collection sau do truy cap den phan id cua document 
-      SharedPrefs.user = body; // luu vao shared prefs 
-
-      if (!context.mounted) return;
-      showTopSnackBar(
-        context,
-        const TDSnackBar.success(message: 'Profile has been saved 😍'),
-      );
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => const CartPage2(title: 'FOODIES',),
-        ),
-        (Route<dynamic> route) => false,
-      );
-    }).catchError((error) {
-      dev.log("Failed to update Profile: $error");
-      if (!context.mounted) return;
-      showTopSnackBar(
-        context,
-        const TDSnackBar.error(message: 'Server error 😐'),
-      );
-      setState(() => isLoading = false);
-    });
-  }
+  bool isLoading = false;
+  File? fileAvatar;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: Form(
-          key: formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0).copyWith(
-                top: MediaQuery.of(context).padding.top + 38.0, bottom: 16.0),
-            children: [
-              const Text(
-                'My Profile',
-                style: TextStyle(color: AppColor.red, fontSize: 24.0),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 38.0),
-              Center(
-                child: _buildAvatar(),
-              ),
-              const SizedBox(height: 42.0),
-              TdTextField(
-                controller: nameController,
-                hintText: "Full Name",
-                prefixIcon: const Icon(Icons.person, color: AppColor.orange),
-                validator: Validator.required,
-                textInputAction: TextInputAction.done,
-              ),
-              const SizedBox(height: 18.0),
-              TdTextField(
-                controller: emailController,
-                hintText: "Email",
-                readOnly: true,
-                prefixIcon: const Icon(Icons.email, color: AppColor.orange),
-              ),
-              const SizedBox(height: 72.0),
-              TdElevatedButton(
-                onPressed: () => _updateProfile(context),
-                text: 'Save',
-                isDisable: isLoading,
-              ),
-              const SizedBox(height: 20.0),
-              TdElevatedButton.outline(
-                onPressed: () => Navigator.pop(context),
-                text: 'Back',
-                isDisable: isLoading,
-              ),
-            ],
+    const avatarRadius = 45.0;
+    return Scaffold(
+      appBar: AppBar(
+        title:  Shimmer.fromColors(
+        baseColor: const Color.fromARGB(255, 64, 228, 4),
+        highlightColor: Colors.yellow,
+        child: const Text(
+          "My Profile",
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.black, 
           ),
         ),
       ),
+        backgroundColor: Colors.red,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Center(
+              child: _buildAvatar(avatarRadius),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              user.name ?? '',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: Column(
+                children: [
+                  _buttonCard(
+                      const Icon(Icons.person_2_outlined, color: Colors.red),
+                      "Information & Contact 🙋‍♂️",
+                      () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyProfilePage()))),
+                  const SizedBox(height: 10.0),
+                  _buttonCard(
+                      const Icon(Icons.lock, color: Colors.orange),
+                      "Password Management 🔐 ",
+                      () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangePasswordPage(
+                              email: '',
+                            ),
+                          ))),
+                  const SizedBox(height: 10.0),
+                  _buttonCard(
+                      const Icon(Icons.location_on, color: Colors.green),
+                      "Adresses 🏠",
+                      () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddressPage()))),
+                  const SizedBox(height: 10.0),
+                  _buttonCard(
+                      const Icon(Icons.payment_outlined, color: Colors.green),
+                      "Payment 🤑",
+                      () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PaymentMethodPage()))),
+                  const SizedBox(height: 10.0),
+                  _buttonCard(
+                      const Icon(Icons.message_outlined,
+                          color: Colors.greenAccent),
+                      "Chat With AI 🖥",
+                      () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatScreen()))),
+                  const SizedBox(height: 10.0),
+                  _buttonCard(
+                    const Icon(Icons.logout, color: Colors.red),
+                    "Exit 💥",
+                    () => AppDialog.dialog(
+                      context,
+                      title: const Text(
+                        'Log Out',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      content: 'Do you want to logout DST.FASTFOOD 💖?',
+                      action: () async {
+                        await FirebaseAuth.instance.signOut();
+                        await SharedPrefs.removeSeason();
+                        if (context.mounted) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      backgroundColor: Colors.white,
     );
   }
 
-  Widget _buildAvatar() {
-    const radius = 34.0;
-    return GestureDetector(
-      onTap: isLoading ? null : pickAvatar,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            child: isLoading
-                ? CircleAvatar(
-                    radius: radius,
-                    backgroundColor: Colors.orange.shade200,
-                    child: const SizedBox.square(
-                      dimension: 32.0,
-                      child: CircularProgressIndicator( // xoay 
-                        color: AppColor.pink,
-                        strokeWidth: 2.0,
-                      ),
-                    ),
-                  )
-                : fileAvatar != null
-                    ? CircleAvatar(
-                        radius: radius,
-                        backgroundImage:
-                            FileImage(File(fileAvatar?.path ?? '')),
-                      )
-                    : user.avatar != null // neu user dang nhap da co anh 
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(radius),
-                            child: Image.network(
-                              '${AppConstant.endPointBaseImage}/${user.avatar!}',
-                              fit: BoxFit.cover,
-                              width: radius * 2,
-                              height: radius * 2,
-                              errorBuilder: (context, error, stackTrace) { // neu link bi loi thi hien anh error 
-                                return Container(
-                                  width: radius * 2,
-                                  height: radius * 2,
-                                  color: AppColor.orange,
-                                  child: const Center(
-                                    child: Icon(Icons.error_rounded,
-                                        color: AppColor.white),
-                                  ),
-                                );
-                              },
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-                                return const SizedBox.square(
-                                  dimension: radius * 2,
-                                  child: Center(
-                                    child: SizedBox.square(
-                                      dimension: 26.0,
-                                      child: CircularProgressIndicator(
-                                        color: AppColor.pink,
-                                        strokeWidth: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : CircleAvatar(
-                            radius: radius,
-                            backgroundImage:
-                                // Assets.images.defaultAvatar.provider()
-                                AssetImage(Assets.images.defaultAvatar.path),
-                          ),
-          ),
-          Positioned(
-            right: 0.0,
-            bottom: 0.0,
-            child: Container(
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.pink)),
-              child: const Icon(
-                Icons.camera_alt_outlined,
-                size: 14.6,
-                color: Colors.pink,
-              ),
-            ),
-          ),
-        ],
+  Widget _buildAvatar(double radius) {
+    if (isLoading) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.orange.shade200,
+        child: const CircularProgressIndicator(
+          color: AppColor.pink,
+          strokeWidth: 2.0,
+        ),
+      );
+    }
+
+    if (fileAvatar != null) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundImage: FileImage(File(fileAvatar!.path)),
+      );
+    }
+
+    if (user.avatar != null && user.avatar!.isNotEmpty) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundImage: NetworkImage(
+          '${AppConstant.endPointBaseImage}/${user.avatar!}',
+        ),
+        backgroundColor: Colors.grey.shade200,
+        onBackgroundImageError: (_, __) {},
+      );
+    }
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundImage: AssetImage(Assets.images.defaultAvatar.path),
+    );
+  }
+
+  Widget _buttonCard(Icon icon, String title, Function()? onTap) {
+    return Card(
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: ListTile(
+        leading: icon,
+        title: Text(
+          title,
+          maxLines: 2,
+          style:
+              const TextStyle(fontSize: 14.0, overflow: TextOverflow.ellipsis),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
       ),
     );
   }

@@ -48,44 +48,48 @@ class _CartPage2State extends State<CartPage2> {
         avatar:
             '${AppConstant.endPointBaseImage}/${SharedPrefs.user?.avatar ?? ''}',
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0)
-              .copyWith(top: 12.0, bottom: 30.0),
-          child: Column(
-            children: [
-              ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: foods.length,
-                itemBuilder: (context, index) {
-                  FoodModel food = foods[index];
-                  return FoodItem2(
-                    food,
-                    onAdd: () => setState(
-                        () => food.quantity = (food.quantity ?? 0) + 1),
-                    onRemove: food.quantity == 1
-                        ? null
-                        : () => setState(
-                            () => food.quantity = (food.quantity ?? 0) - 1),
-                    onDelete: () => AppDialog.dialog(
-                      context,
-                      title: const Text('😐'),
-                      content: 'Delete this food?',
-                      action: () => setState(
-                          () => foods.removeWhere((e) => e.id == food.id)),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 20.0),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+        ).copyWith(top: 12.0),
+        child: CustomScrollView(
+          slivers: [
+            SliverList.separated(
+              itemCount: foods.length,
+              itemBuilder: (context, index) {
+                FoodModel food = foods[index];
+                return FoodItem2(
+                  food,
+                  onAdd: () =>
+                      setState(() => food.quantity = (food.quantity ?? 0) + 1),
+                  onRemove: food.quantity == 1
+                      ? null
+                      : () => setState(
+                          () => food.quantity = (food.quantity ?? 0) - 1),
+                  onDelete: () => AppDialog.dialog(
+                    context,
+                    title: const Text('😐'),
+                    content: 'Delete this food?',
+                    action: () => setState(
+                        () => foods.removeWhere((e) => e.id == food.id)),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: 20.0),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const SizedBox(height: 16.0),
+                  DeliveryTime(minute: 25, totalPrice: totalPrice),
+                  const SizedBox(height: 24.0),
+                ],
               ),
-              const SizedBox(height: 56.0),
-              DeliveryTime(minute: 25, totalPrice: totalPrice)
-              
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
