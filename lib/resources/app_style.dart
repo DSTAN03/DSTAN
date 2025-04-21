@@ -16,7 +16,7 @@ class AppStyle {
     color: AppColor.red,
     //height: 1.0,
     fontWeight: FontWeight.w700,
-  );
+  ); 
 
   static const h14Normal = TextStyle(
     fontSize: 14.0,

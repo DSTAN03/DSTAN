@@ -13,6 +13,7 @@ class TdTextField extends StatelessWidget {
     this.textInputAction,
     this.validator,
     this.readOnly = false,
+    this.onChanged,
   });
 
   final TextEditingController? controller;
@@ -24,6 +25,7 @@ class TdTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FormFieldValidator<String>? validator;
   final bool readOnly;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,8 @@ class TdTextField extends StatelessWidget {
           textInputAction: textInputAction,
           validator: validator,
           readOnly: readOnly,
-          autovalidateMode: AutovalidateMode.onUserInteraction, // validate lien tuc 
+          autovalidateMode:
+              AutovalidateMode.onUserInteraction, // validate lien tuc
           decoration: InputDecoration(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.6),

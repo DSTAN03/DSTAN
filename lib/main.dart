@@ -26,7 +26,6 @@ void main() async {
   await Firebase.initializeApp();
 
   Stripe.publishableKey = stripePublishableKey;
-
   runApp(const MyApp());
 }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:thuc_tap_1/pages/cart/widget/button_shimmner.dart';
+import 'package:thuc_tap_1/pages/payment/payment_page.dart';
 import '../../../components/app_box_shadow.dart';
 import '../../../components/button/app_elevated_button.dart';
-import '../../payment/payment_page.dart';
 
 class DeliveryTime extends StatelessWidget {
   const DeliveryTime({
@@ -72,8 +72,7 @@ class DeliveryTime extends StatelessWidget {
                       child: AppElevatedButton.small(
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const PaymentPage(),
-                          ),
+                              builder: (context) => const PaymentPage()),
                         ),
                         height: 40.0,
                         text: 'Place Order',

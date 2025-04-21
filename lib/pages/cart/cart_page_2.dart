@@ -65,7 +65,7 @@ class _CartPage2State extends State<CartPage2> {
                   onRemove: food.quantity == 1
                       ? null
                       : () => setState(
-                          () => food.quantity = (food.quantity ?? 0) - 1),
+                          () => food.quantity = (food.quantity) ?? 0 - 1),
                   onDelete: () => AppDialog.dialog(
                     context,
                     title: const Text('😐'),

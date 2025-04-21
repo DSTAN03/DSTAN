@@ -90,7 +90,7 @@ class FoodItem2 extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${food.quantity ?? 0}',
+                      '${food.quantity}',
                       style: const TextStyle(color: Colors.red, fontSize: 16.8),
                     ),
                     SizedBox(

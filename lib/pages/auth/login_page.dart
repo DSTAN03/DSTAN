@@ -8,7 +8,7 @@ import 'package:thuc_tap_1/components/text_field/td_text_field.dart';
 import 'package:thuc_tap_1/components/text_field/td_text_field_password.dart';
 import 'package:thuc_tap_1/gen/assets.gen.dart';
 import 'package:thuc_tap_1/models/user_model.dart';
-import 'package:thuc_tap_1/pages/cart/cart_page_2.dart';
+import 'package:thuc_tap_1/pages/home_page.dart';
 import 'package:thuc_tap_1/resources/app_color.dart';
 import 'package:thuc_tap_1/services/local/shared_prefs.dart';
 import 'package:thuc_tap_1/utils/validator.dart';
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!context.mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => CartPage2(title: 'FOODIES', )),
+        MaterialPageRoute(builder: (_) => HomePage(title: 'FOODIES', )),
         (route) => false,
       );
     } catch (_) {

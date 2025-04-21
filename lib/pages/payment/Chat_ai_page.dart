@@ -33,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     _controller.clear();
-
+    
     final aiResponse = await GeminiService().sendMessage(userInput);
 
     setState(() {
@@ -96,9 +96,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isUser
-                              ? Colors.blueAccent
-                              : Colors.grey.shade300,
+                          color:
+                              isUser ? Colors.blueAccent : Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -128,7 +127,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _controller,
                     decoration: const InputDecoration(
-                      hintText: 'Nhập tin nhắn...',
+                      hintText: 'Suy nghĩ của bạn là gì ... ?',
                       border: InputBorder.none,
                     ),
                     onSubmitted: (_) => _sendMessage(),

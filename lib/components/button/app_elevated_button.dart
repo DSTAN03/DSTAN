@@ -13,7 +13,7 @@ class AppElevatedButton extends StatelessWidget {
     this.color = Colors.red,
     this.borderColor = Colors.red,
     this.borderRadius = const BorderRadius.all(Radius.circular(12.0)),
-    this.padding = const EdgeInsets.symmetric(horizontal: 30.0),
+    this.padding = const EdgeInsets.symmetric(horizontal: 30.0), this.width, 
   });
 
   const AppElevatedButton.outline({
@@ -27,7 +27,7 @@ class AppElevatedButton extends StatelessWidget {
     this.color = Colors.white,
     this.borderColor = Colors.red,
     this.borderRadius = const BorderRadius.all(Radius.circular(12.0)),
-    this.padding = const EdgeInsets.symmetric(horizontal: 30.0),
+    this.padding = const EdgeInsets.symmetric(horizontal: 30.0), this.width,
   });
 
   const AppElevatedButton.small({
@@ -41,7 +41,7 @@ class AppElevatedButton extends StatelessWidget {
     this.color = Colors.red,
     this.borderColor = Colors.red,
     this.borderRadius = const BorderRadius.all(Radius.circular(10.0)),
-    this.padding = const EdgeInsets.symmetric(horizontal: 24.0),
+    this.padding = const EdgeInsets.symmetric(horizontal: 24.0), this.width,
   });
 
   const AppElevatedButton.smallOutline({
@@ -55,11 +55,12 @@ class AppElevatedButton extends StatelessWidget {
     this.color = Colors.white,
     this.borderColor = Colors.red,
     this.borderRadius = const BorderRadius.all(Radius.circular(10.0)),
-    this.padding = const EdgeInsets.symmetric(horizontal: 24.0),
+    this.padding = const EdgeInsets.symmetric(horizontal: 24.0), this.width,
   });
 
   final Function()? onPressed;
   final double height;
+  final double? width;
   final Icon? icon;
   final String text;
   final Color textColor;
