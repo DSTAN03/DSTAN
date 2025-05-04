@@ -32,6 +32,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
+
         child: Padding(
           padding: EdgeInsets.only(
               top: MediaQuery.of(context).padding.top + 38.0, bottom: 16.0),
@@ -93,7 +94,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       height: 10.0,
                       decoration: BoxDecoration(
                           color:
-                              index == currentIndex ? Colors.red : Colors.grey,
+                              index == currentIndex ? Colors.red : Colors.black,
                           borderRadius: BorderRadius.circular(20.0)),
                     ),
                   ),

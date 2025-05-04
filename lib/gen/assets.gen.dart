@@ -44,7 +44,6 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/logo_1.png
   AssetGenImage get logo1 => const AssetGenImage('assets/images/logo_1.png');
-
   /// File path: assets/images/logo_2.png
   AssetGenImage get logo2 => const AssetGenImage('assets/images/logo_2.png');
 

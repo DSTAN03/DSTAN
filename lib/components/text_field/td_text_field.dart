@@ -57,6 +57,7 @@ class TdTextField extends StatelessWidget {
           textInputAction: textInputAction,
           validator: validator,
           readOnly: readOnly,
+          onChanged: onChanged,
           autovalidateMode:
               AutovalidateMode.onUserInteraction, // validate lien tuc
           decoration: InputDecoration(
